@@ -1,17 +1,21 @@
+import 'package:debounce_builder/debounce_builder.dart';
 import 'package:flutter/widgets.dart';
 import 'package:knob/knob.dart';
+import 'package:knob/src/knob_field.dart';
 import 'package:knob/src/knob_scope.dart';
 
 class Knob<T> extends StatefulWidget {
-  final T? initialData;
   final KnobField<T> child;
   final ValueChanged<T?> onChanged;
+  final T? initialData;
+  final Duration? delay;
 
   const Knob({
     super.key,
     required this.onChanged,
     required this.child,
     this.initialData,
+    this.delay,
   });
 
   @override
@@ -19,6 +23,7 @@ class Knob<T> extends StatefulWidget {
 }
 
 class _KnobState<T> extends State<Knob<T>> {
+  late final DebounceTimer _debounceTimer = DebounceTimer(delay: widget.delay);
   late _Controller<T> _controller;
 
   @override
@@ -45,13 +50,24 @@ class _KnobState<T> extends State<Knob<T>> {
   }
 
   void _onChanged(T? value) {
-    if (_controller.value != value || _controller.value == widget.initialData) {
-      widget.onChanged(value);
-      if (mounted) {
-        setState(() {
-          _controller = _controller.fromValue(value);
-        });
+    void onChanged(T? value) {
+      if (_controller.value != value ||
+          _controller.value == widget.initialData) {
+        widget.onChanged(value);
+        if (mounted) {
+          setState(() {
+            _controller = _controller.fromValue(value);
+          });
+        }
       }
+    }
+
+    if (widget.delay != null && widget.delay!.inMilliseconds > 0) {
+      _debounceTimer.debounce(() {
+        onChanged(value);
+      });
+    } else {
+      onChanged(value);
     }
   }
 
@@ -66,6 +82,12 @@ class _KnobState<T> extends State<Knob<T>> {
 
   void _postFrameCallback(Duration timeStamp) {
     _controller.notifier.notify();
+  }
+
+  @override
+  void dispose() {
+    _debounceTimer.dispose();
+    super.dispose();
   }
 }
 

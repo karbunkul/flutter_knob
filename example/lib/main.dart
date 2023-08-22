@@ -38,12 +38,12 @@ class DemoPage extends StatelessWidget {
             Knob(
               initialData: 'Hello World',
               onChanged: _onChanged,
-              child: KnobText(
-                controller: TextEditingController(),
-              ),
+              delay: const Duration(milliseconds: 300),
+              child: KnobText(controller: TextEditingController()),
             ),
             Knob(
               initialData: 15,
+              delay: const Duration(milliseconds: 20),
               onChanged: _onChanged,
               child: const KnobSlider(),
             ),
