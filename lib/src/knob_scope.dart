@@ -13,7 +13,7 @@ class KnobScope<T> extends InheritedWidget {
   static KnobScope<T> of<T>(BuildContext context) {
     final KnobScope<T>? result =
         context.dependOnInheritedWidgetOfExactType<KnobScope<T>>();
-    assert(result != null, 'No KnobScope found in context');
+    assert(result != null, 'No KnobScope<$T> found in context');
     return result!;
   }
 
