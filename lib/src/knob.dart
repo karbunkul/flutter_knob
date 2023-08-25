@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:knob/knob.dart';
 import 'package:knob/src/knob_scope.dart';
 
-class Knob<T extends Object> extends StatefulWidget {
+class Knob<T> extends StatefulWidget {
   final Widget child;
   final ValueChanged<T?> onChanged;
   final T? initialData;
@@ -19,7 +19,7 @@ class Knob<T extends Object> extends StatefulWidget {
   State<Knob<T>> createState() => _KnobState<T>();
 }
 
-class _KnobState<T extends Object> extends State<Knob<T>> {
+class _KnobState<T> extends State<Knob<T>> {
   late _Controller<T> _controller;
 
   @override
