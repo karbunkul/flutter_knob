@@ -40,7 +40,9 @@ class DemoPage extends StatelessWidget {
             Knob<String>(
               initialData: 'Hello World',
               onChanged: _onChanged,
-              child: const KnobText(),
+              child: KnobText(
+                controller: TextEditingController(),
+              ),
             ),
             Knob<num>(
               initialData: 35,
@@ -61,23 +63,19 @@ class DemoPage extends StatelessWidget {
   void _onChanged(value) => log('onChanged $value');
 }
 
-class KnobSlider extends StatelessWidget {
+class KnobSlider extends KnobWidget<num> {
   final double min;
   final double max;
 
   const KnobSlider({super.key, this.min = 0, this.max = 100});
 
   @override
-  Widget build(context) {
-    return KnobBuilder<num>(
-      builder: (context, controller) {
-        return Slider(
-          value: controller.value?.toDouble() ?? min,
-          min: min,
-          max: max,
-          onChanged: controller.onChanged(),
-        );
-      },
+  Widget builder(context, controller) {
+    return Slider(
+      value: controller.value?.toDouble() ?? min,
+      min: min,
+      max: max,
+      onChanged: controller.onChanged(),
     );
   }
 }

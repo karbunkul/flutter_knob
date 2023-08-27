@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:debounce_builder/debounce_builder.dart';
 import 'package:flutter/widgets.dart';
 import 'package:knob/knob.dart';
@@ -21,6 +23,7 @@ class Knob<T> extends StatefulWidget {
 
 class _KnobState<T> extends State<Knob<T>> {
   late _Controller<T> _controller;
+  final _value = StreamController<T?>.broadcast();
 
   @override
   void initState() {
@@ -28,11 +31,11 @@ class _KnobState<T> extends State<Knob<T>> {
       value: widget.initialData,
       onChanged: _onChanged,
     );
+    super.initState();
 
     if (widget.initialData != null) {
-      _onChanged(widget.initialData);
+      widget.onChanged(widget.initialData);
     }
-    super.initState();
   }
 
   @override
@@ -41,21 +44,27 @@ class _KnobState<T> extends State<Knob<T>> {
       throw Exception('Knob<dynamic> is bad idea, please use generic type');
     }
 
-    return KnobScope<T>(
-      controller: _controller,
-      child: widget.child,
+    return StreamBuilder<T?>(
+      stream: _value.stream,
+      initialData: widget.initialData,
+      builder: (context, snapshot) {
+        if (_controller.value != snapshot.data) {
+          _controller = _controller.fromValue(snapshot.data);
+        }
+
+        return KnobScope<T>(
+          controller: _controller,
+          child: widget.child,
+        );
+      },
     );
   }
 
   void _onChanged(T? value) {
-    if (_controller.value != value || _controller.value == widget.initialData) {
+    Future.delayed(Duration.zero, () {
+      _value.add(value);
       widget.onChanged(value);
-      if (mounted) {
-        setState(() {
-          _controller = _controller.fromValue(value);
-        });
-      }
-    }
+    });
   }
 
   @override
@@ -68,6 +77,7 @@ class _KnobState<T> extends State<Knob<T>> {
 
   @override
   void dispose() {
+    _value.close();
     _controller.dispose();
     super.dispose();
   }
