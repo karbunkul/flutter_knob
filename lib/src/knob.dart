@@ -44,19 +44,22 @@ class _KnobState<T> extends State<Knob<T>> {
       throw Exception('Knob<dynamic> is bad idea, please use generic type');
     }
 
-    return StreamBuilder<T?>(
-      stream: _value.stream,
-      initialData: widget.initialData,
-      builder: (context, snapshot) {
-        if (_controller.value != snapshot.data) {
-          _controller = _controller.fromValue(snapshot.data);
-        }
+    return KeyedSubtree(
+      key: ValueKey(widget.initialData),
+      child: StreamBuilder<T?>(
+        stream: _value.stream,
+        initialData: widget.initialData,
+        builder: (context, snapshot) {
+          if (_controller.value != snapshot.data) {
+            _controller = _controller.fromValue(snapshot.data);
+          }
 
-        return KnobScope<T>(
-          controller: _controller,
-          child: widget.child,
-        );
-      },
+          return KnobScope<T>(
+            controller: _controller,
+            child: widget.child,
+          );
+        },
+      ),
     );
   }
 

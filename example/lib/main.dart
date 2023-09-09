@@ -3,11 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:knob/knob.dart';
 
-import 'knob_text.dart';
-
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -40,19 +36,17 @@ class DemoPage extends StatelessWidget {
             Knob<String>(
               initialData: 'Hello World',
               onChanged: _onChanged,
-              child: KnobText(
-                controller: TextEditingController(),
-              ),
+              child: const TextfieldKnob(),
             ),
             Knob<num>(
               initialData: 35,
               onChanged: _onChanged,
-              child: const KnobSlider(),
+              child: const SliderKnob(),
             ),
             Knob<num>(
               initialData: 15,
               onChanged: _onChanged,
-              child: const KnobSlider(),
+              child: const SliderKnob(),
             ),
           ],
         ),
@@ -61,21 +55,4 @@ class DemoPage extends StatelessWidget {
   }
 
   void _onChanged(value) => log('onChanged $value');
-}
-
-class KnobSlider extends KnobWidget<num> {
-  final double min;
-  final double max;
-
-  const KnobSlider({super.key, this.min = 0, this.max = 100});
-
-  @override
-  Widget builder(context, controller) {
-    return Slider(
-      value: controller.value?.toDouble() ?? min,
-      min: min,
-      max: max,
-      onChanged: controller.onChanged(),
-    );
-  }
 }
